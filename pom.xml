@@ -1,0 +1,85 @@
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>tiny-task-spring-boot-starter</artifactId>
+  <version>1.0.0</version>
+
+  <parent>
+    <groupId>cn.404z</groupId>
+    <artifactId>parent</artifactId>
+    <version>1.3.0</version>
+  </parent>
+
+  <name>tiny-task-spring-boot-starter</name>
+  <description>Tiny Task SpringBoot Starter 轻量级集群任务SpringBoot启动器</description>
+  <url>https://github.com/ALI1416/tiny-task-spring-boot-starter</url>
+
+  <scm>
+    <url>git@github.com:ALI1416/tiny-task-spring-boot-starter.git</url>
+    <connection>scm:git@github.com:ALI1416/tiny-task-spring-boot-starter.git</connection>
+  </scm>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+      <version>2.7.15</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-redis</artifactId>
+      <version>2.7.15</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-amqp</artifactId>
+      <version>2.7.15</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.alibaba.fastjson2</groupId>
+      <artifactId>fastjson2</artifactId>
+      <version>2.0.39</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.alibaba.fastjson2</groupId>
+      <artifactId>fastjson2-extension-spring5</artifactId>
+      <version>2.0.39</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- 仅供编译使用 -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-autoconfigure-processor</artifactId>
+      <version>2.7.15</version>
+      <optional>true</optional>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-configuration-processor</artifactId>
+      <version>2.7.15</version>
+      <optional>true</optional>
+      <scope>provided</scope>
+    </dependency>
+    <!-- 仅供测试使用 -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <version>2.7.15</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.28</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+</project>

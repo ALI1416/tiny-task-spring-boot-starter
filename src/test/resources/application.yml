@@ -1,0 +1,3 @@
+tiny-token:
+  prefix: tinytoken
+  timeout: 2592000
