@@ -28,14 +28,14 @@ public class TinyTaskAutoConfiguration {
     /**
      * 前缀默认值{@value}
      */
-    private static final String DEFAULT_PREFIX = "tinytoken";
+    private static final String DEFAULT_PREFIX = "tinytask";
     /**
-     * 过期时间默认值{@value}秒(30天)
+     * 过期时间默认值{@value}秒
      */
-    private static final long DEFAULT_TIMEOUT = 2592000L;
+    private static final long DEFAULT_TIMEOUT = 5L;
 
     /**
-     * TinyTaskProperties
+     * 轻量级集群任务配置属性
      */
     private final TinyTaskProperties tinyTaskProperties;
 
@@ -53,7 +53,7 @@ public class TinyTaskAutoConfiguration {
      */
     @PostConstruct
     public void init() {
-        String msg = "TinyToken配置：前缀PREFIX ";
+        String msg = "TinyTask配置：前缀PREFIX ";
         if (tinyTaskProperties.getPrefix() == null) {
             tinyTaskProperties.setPrefix(DEFAULT_PREFIX);
             msg += DEFAULT_PREFIX + " (默认)";
@@ -63,7 +63,7 @@ public class TinyTaskAutoConfiguration {
         msg += "，过期时间TIMEOUT ";
         if (tinyTaskProperties.getTimeout() == null) {
             tinyTaskProperties.setTimeout(DEFAULT_TIMEOUT);
-            msg += DEFAULT_TIMEOUT + " (秒)[30天](默认)";
+            msg += DEFAULT_TIMEOUT + " (秒)(默认)";
         } else {
             msg += tinyTaskProperties.getTimeout() + " (秒)";
         }

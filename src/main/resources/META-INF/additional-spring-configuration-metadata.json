@@ -1,18 +1,18 @@
 {
   "properties": [
     {
-      "name": "tiny-token.prefix",
+      "name": "tiny-task.prefix",
       "type": "java.lang.String",
       "description": "前缀.",
       "sourceType": "cn.z.tinytask.autoconfigure.TinyTaskProperties",
-      "defaultValue": "tinytoken"
+      "defaultValue": "tinytask"
     },
     {
-      "name": "tiny-token.timeout",
+      "name": "tiny-task.timeout",
       "type": "java.lang.Long",
-      "description": "过期时间(秒)(默认值30天).",
+      "description": "过期时间(秒)(默认值5).",
       "sourceType": "cn.z.tinytask.autoconfigure.TinyTaskProperties",
-      "defaultValue": 2592000
+      "defaultValue": 5
     }
   ]
 }

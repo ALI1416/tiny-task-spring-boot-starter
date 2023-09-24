@@ -12,20 +12,20 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author ALI[ali-k@foxmail.com]
  * @since 1.0.0
  */
-@ConfigurationProperties(prefix = TinyTaskProperties.TINY_TOKEN_PREFIX)
+@ConfigurationProperties(prefix = TinyTaskProperties.TINY_TASK_PREFIX)
 public class TinyTaskProperties {
 
     /**
      * 前缀{@value}
      */
-    public static final String TINY_TOKEN_PREFIX = "tiny-token";
+    public static final String TINY_TASK_PREFIX = "tiny-task";
 
     /**
-     * 前缀(默认值"tinytoken")
+     * 前缀(默认值"tinytask")
      */
     private String prefix;
     /**
-     * 过期时间(秒)(默认值2592000[30天])
+     * 过期时间(秒)(默认值5)
      */
     private Long timeout;
 

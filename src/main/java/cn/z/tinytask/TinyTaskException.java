@@ -1,7 +1,7 @@
 package cn.z.tinytask;
 
 /**
- * <h1>TinyToken异常类</h1>
+ * <h1>TinyTask异常类</h1>
  *
  * <p>
  * createDate 2023/08/01 17:40:03
@@ -13,14 +13,14 @@ package cn.z.tinytask;
 public class TinyTaskException extends RuntimeException {
 
     /**
-     * TinyToken异常
+     * TinyTask异常
      */
     public TinyTaskException() {
         super();
     }
 
     /**
-     * TinyToken异常
+     * TinyTask异常
      *
      * @param message 信息
      */
