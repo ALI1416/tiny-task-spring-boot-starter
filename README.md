@@ -14,7 +14,7 @@
 
 ## 简介
 
-轻量级集群任务SpringBoot版，使用Redis、RabbitMQ、高性能雪花ID生成器、Fastjson2等技术
+轻量级集群任务SpringBoot版，使用Redis、RabbitMQ、高性能雪花ID生成器等技术
 
 使用方法请看[项目示例](./tiny-task-spring-boot-starter-test)
 
@@ -45,11 +45,6 @@
   <groupId>cn.404z</groupId>
   <artifactId>id-spring-boot-autoconfigure</artifactId>
   <version>2.8.0</version>
-</dependency>
-<dependency>
-  <groupId>com.alibaba.fastjson2</groupId>
-  <artifactId>fastjson2</artifactId>
-  <version>2.0.39</version>
 </dependency>
 <dependency>
   <groupId>org.projectlombok</groupId>

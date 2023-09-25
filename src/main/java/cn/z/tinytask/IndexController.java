@@ -1,16 +1,11 @@
 package cn.z.tinytask;
 
 import cn.z.tinytask.autoconfigure.TinyTaskProperties;
-import cn.z.tinytask.entity.Msg;
-import cn.z.tinytask.entity.MsgType;
-import cn.z.tinytask.entity.OperateType;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.util.Arrays;
 
 /**
  * <h1>IndexController</h1>
@@ -40,27 +35,16 @@ public class IndexController {
     }
 
     @GetMapping("a")
-    public Msg a() throws Exception {
-        Msg msg = new Msg();
-        msg.setOperateType(OperateType.AUTO);
-        msg.setMsgType(MsgType.ONCE);
+    public String a() throws Exception {
         Class clazz = this.getClass();
-        msg.setObjectName(clazz.getName());
-        Method method = clazz.getMethod("test", String.class, int.class, double.class);
-        msg.setMethodName(method.getName());
-        Parameter[] parameters = method.getParameters();
-        String[] paramType = new String[parameters.length];
-        for (int i = 0; i < parameters.length; i++) {
-            paramType[i] = parameters[i].getType().getName();
-        }
-        msg.setParamType(paramType);
-        msg.setParamValue(new String[]{"哈哈哈", "123", "4.56"});
-        rabbitTemplate.convertAndSend(tinyTaskProperties.getPrefix(), msg.toJson());
+        Method method = clazz.getMethod("test");
+        String msg = clazz.getName() + "." + method.getName();
+        rabbitTemplate.convertAndSend(tinyTaskProperties.getPrefix(), msg);
         return msg;
     }
 
-    public void test(String s, int i, double d) {
-        System.out.println(s + " " + i + " " + d);
+    public void test() {
+        System.out.println("12222");
     }
 
 }

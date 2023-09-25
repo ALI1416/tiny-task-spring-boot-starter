@@ -1,37 +1,34 @@
 package cn.z.tinytask;
 
+import cn.z.id.Id;
+import cn.z.tinytask.annotation.TaskInfo;
 import cn.z.tinytask.autoconfigure.TinyTaskProperties;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * <h1>轻量级集群任务Spring实现</h1>
  *
- * <h3>id类型:Long</h3>
- * <h3>token类型:String</h3>
- * <h3>拓展内容类型:String</h3>
- *
  * <p>
- * 使用Redis储存token<br>
- * 键名：前缀:id:token<br>
- * 值：指定值
- * </p>
- *
- * <p>
- * createDate 2023/07/24 10:09:31
+ * createDate 2023/09/24 10:09:31
  * </p>
  *
  * @author ALI[ali-k@foxmail.com]
  * @since 1.0.0
  **/
 @Component
-public class T4s implements TinyTask<Long, String, String> {
+public class T4s implements TinyTask<Long> {
+
+    /**
+     * 准备执行
+     */
+    private static final String READY = "ready";
+    /**
+     * 正在执行
+     */
+    private static final String RUNNING = "running";
 
     /**
      * 前缀
@@ -50,7 +47,7 @@ public class T4s implements TinyTask<Long, String, String> {
      * 构造函数(自动注入)
      *
      * @param tinyTaskProperties TinyTokenProperties
-     * @param rt                  Rt
+     * @param rt                 Rt
      */
     public T4s(TinyTaskProperties tinyTaskProperties, Rt rt) {
         this.prefix = tinyTaskProperties.getPrefix();
@@ -59,105 +56,37 @@ public class T4s implements TinyTask<Long, String, String> {
     }
 
     /**
-     * 设置token(token使用UUID 过期时间使用默认值)
+     * 设置准备执行(任务ID使用雪花ID)
      *
-     * @param id id
-     * @return token
+     * @param methodName 方法名
+     * @return 任务ID
      */
     @Override
-    public String setToken(Long id) {
-        String token = UUID.randomUUID().toString();
-        setToken(id, token, "", timeout);
-        return token;
+    public Long setReady(String methodName) {
+        Long taskId = Id.next();
+        setReady(methodName, taskId);
+        return taskId;
     }
 
     /**
-     * 设置token(token使用UUID)
+     * 设置准备执行
      *
-     * @param id      id
-     * @param timeout 过期时间(秒)
-     * @return token
+     * @param methodName 方法名
+     * @param taskId     任务ID
      */
     @Override
-    public String setToken(Long id, long timeout) {
-        String token = UUID.randomUUID().toString();
-        setToken(id, token, "", timeout);
-        return token;
+    public void setReady(String methodName, Long taskId) {
+        rt.set(prefix + ":" + READY + ":" + methodName + ":" + taskId, timeout);
     }
 
     /**
-     * 设置token(过期时间使用默认值)
+     * 获取准备执行的键
      *
-     * @param id    id
-     * @param token token
-     */
-    @Override
-    public void setToken(Long id, String token) {
-        setToken(id, token, "", timeout);
-    }
-
-    /**
-     * 设置token
-     *
-     * @param id      id
-     * @param token   token
-     * @param timeout 过期时间(秒)
-     */
-    @Override
-    public void setToken(Long id, String token, long timeout) {
-        setToken(id, token, "", timeout);
-    }
-
-    /**
-     * 设置token
-     *
-     * @param id      id
-     * @param token   token
-     * @param extra   拓展内容
-     * @param timeout 过期时间(秒)
-     */
-    @Override
-    public void setToken(Long id, String token, String extra, long timeout) {
-        rt.set(prefix + ":" + id + ":" + token, extra, timeout);
-    }
-
-    /**
-     * 获取token(当前Context 不判断是否有效)
-     *
-     * @return token(不存在返回null)
-     * @throws TinyTaskException 不存在Context
-     */
-    @Override
-    public String getToken() {
-        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-        if (requestAttributes == null) {
-            throw new TinyTaskException("不存在Context");
-        }
-        return ((ServletRequestAttributes) requestAttributes).getRequest().getHeader(prefix);
-    }
-
-    /**
-     * 获取token(当前Context 判断是否有效)
-     *
-     * @return token(不存在或无效返回null)
-     */
-    @Override
-    public String getTokenValid() {
-        String token = getToken();
-        if (token != null && existByToken(token)) {
-            return token;
-        }
-        return null;
-    }
-
-    /**
-     * 获取键
-     *
-     * @param token token
+     * @param methodName 方法名
      * @return 键(不存在返回null)
      */
-    private String getKey(String token) {
-        List<String> scan = rt.scan(prefix + ":*:" + token);
+    private String getReadyKey(String methodName) {
+        List<String> scan = rt.scan(prefix + ":" + READY + ":" + methodName + ":*");
         if (!scan.isEmpty()) {
             return scan.get(0);
         }
@@ -165,317 +94,143 @@ public class T4s implements TinyTask<Long, String, String> {
     }
 
     /**
-     * 获取键列表
+     * 获取准备执行的任务ID
      *
-     * @param id id
-     * @return 键列表(不存在返回[])
-     */
-    private List<String> getKey(Long id) {
-        return rt.scan(prefix + ":" + id + ":*");
-    }
-
-    /**
-     * 获取token列表
-     *
-     * @param id id
-     * @return token列表(不存在返回[])
+     * @param methodName 方法名
+     * @return 存在:任务ID 不存在:null
      */
     @Override
-    public List<String> getToken(Long id) {
-        List<String> tokens = new ArrayList<>();
-        List<String> keys = getKey(id);
-        for (String key : keys) {
-            String[] split = key.split(":", -1);
-            if (split.length == 3) {
-                tokens.add(split[2]);
-            }
-        }
-        return tokens;
-    }
-
-    /**
-     * 获取id(当前Context)
-     *
-     * @return id(不存在返回null)
-     */
-    @Override
-    public Long getId() {
-        String token = getToken();
-        if (token != null) {
-            return getId(token);
-        }
-        return null;
-    }
-
-    /**
-     * 获取id
-     *
-     * @param token token
-     * @return id(不存在返回null)
-     */
-    @Override
-    public Long getId(String token) {
-        String key = getKey(token);
+    public Long getReady(String methodName) {
+        String key = getReadyKey(methodName);
         if (key != null) {
             String[] split = key.split(":", -1);
-            if (split.length == 3) {
-                return Long.parseLong(split[1]);
+            if (split.length == 4) {
+                return Long.parseLong(split[3]);
             }
         }
         return null;
     }
 
     /**
-     * token是否存在(当前Context)
+     * 设置开始执行
      *
-     * @return 是否存在
+     * @param methodName 方法名
+     * @param taskId     任务ID
      */
     @Override
-    public boolean existByToken() {
-        return getTokenValid() != null;
+    public void setBegin(String methodName, Long taskId) {
+        rt.set(prefix + ":" + READY + ":" + methodName + ":" + taskId);
     }
 
     /**
-     * token是否存在
+     * 设置结束执行
      *
-     * @param token token
-     * @return 是否存在
+     * @param methodName 方法名
+     * @param taskId     任务ID
      */
     @Override
-    public boolean existByToken(String token) {
-        return !rt.scan(prefix + ":*:" + token).isEmpty();
+    public Boolean setEnd(String methodName, Long taskId) {
+        return rt.delete(prefix + ":" + READY + ":" + methodName + ":" + taskId);
     }
 
     /**
-     * id是否存在
+     * 获取正在执行的键
      *
-     * @param id id
-     * @return 是否存在
+     * @return 键(不存在返回null)
      */
-    @Override
-    public boolean existById(Long id) {
-        return !getKey(id).isEmpty();
+    private List<String> getRunningKey() {
+        return rt.scan(prefix + ":" + RUNNING + ":*");
     }
 
     /**
-     * 删除(当前Context)
+     * 获取正在执行的任务
      *
-     * @return 是否成功
+     * @return 任务信息列表
      */
     @Override
-    public Boolean deleteByToken() {
-        String token = getToken();
-        if (token != null) {
-            return deleteByToken(token);
-        }
-        return false;
-    }
-
-    /**
-     * 删除
-     *
-     * @param token token
-     * @return 是否成功
-     */
-    @Override
-    public Boolean deleteByToken(String token) {
-        String key = getKey(token);
-        if (key != null) {
-            return rt.delete(key);
-        }
-        return false;
-    }
-
-    /**
-     * 删除
-     *
-     * @param id id
-     * @return 成功个数
-     */
-    @Override
-    public Long deleteById(Long id) {
-        List<String> keys = getKey(id);
-        if (!keys.isEmpty()) {
-            return rt.deleteMulti(keys);
-        }
-        return 0L;
-    }
-
-    /**
-     * 设置过期时间(当前Context)
-     *
-     * @param timeout 过期时间(秒)
-     * @return 是否成功
-     */
-    @Override
-    public Boolean expire(long timeout) {
-        String token = getToken();
-        if (token != null) {
-            return expire(token, timeout);
-        }
-        return false;
-    }
-
-    /**
-     * 设置过期时间
-     *
-     * @param token   token
-     * @param timeout 过期时间(秒)
-     * @return 是否成功
-     */
-    @Override
-    public Boolean expire(String token, long timeout) {
-        String key = getKey(token);
-        if (key != null) {
-            return rt.expire(key, timeout);
-        }
-        return false;
-    }
-
-    /**
-     * 设置永不过期(当前Context)
-     *
-     * @return 是否成功
-     */
-    @Override
-    public Boolean persist() {
-        String token = getToken();
-        if (token != null) {
-            return persist(token);
-        }
-        return false;
-    }
-
-    /**
-     * 设置永不过期
-     *
-     * @param token token
-     * @return 是否成功
-     */
-    @Override
-    public Boolean persist(String token) {
-        String key = getKey(token);
-        if (key != null) {
-            return rt.persist(key);
-        }
-        return false;
-    }
-
-    /**
-     * 获取信息(当前Context)
-     *
-     * @return 信息(不存在返回null)
-     */
-    @Override
-    public Info<Long, String> getInfoByToken() {
-        String token = getToken();
-        if (token != null) {
-            return getInfoByToken(token);
-        }
-        return null;
-    }
-
-    /**
-     * 获取信息
-     *
-     * @param token token
-     * @return 信息(不存在返回null)
-     */
-    @Override
-    public Info<Long, String> getInfoByToken(String token) {
-        String key = getKey(token);
-        if (key != null) {
-            Long expire = rt.getExpire(key);
-            if (expire > -2) {
-                String[] split = key.split(":", -1);
-                if (split.length == 3) {
-                    return new Info<>(Long.parseLong(split[1]), token, expire);
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 获取信息列表
-     *
-     * @param id id
-     * @return 信息列表(不存在返回[])
-     */
-    @Override
-    public List<Info<Long, String>> getInfoById(Long id) {
-        List<Info<Long, String>> list = new ArrayList<>();
-        List<String> keys = getKey(id);
+    public List<TaskInfo<Long>> getRunning() {
+        List<TaskInfo<Long>> list = new ArrayList<>();
+        List<String> keys = getRunningKey();
         for (String key : keys) {
-            Long expire = rt.getExpire(key);
-            if (expire > -2) {
-                String[] split = key.split(":", -1);
-                if (split.length == 3) {
-                    list.add(new Info<>(id, split[2], expire));
-                }
+            String[] split = key.split(":", -1);
+            if (split.length == 4) {
+                TaskInfo<Long> info = new TaskInfo<>();
+                // TODO
+                info.setMethodName(split[2]);
+                info.setTaskId(Long.parseLong(split[3]));
+                list.add(info);
             }
         }
         return list;
     }
 
     /**
-     * 获取信息拓展(当前Context)
+     * 获取所有任务
      *
-     * @return 信息拓展(不存在返回null)
+     * @return 任务信息列表
      */
     @Override
-    public InfoExtra<Long, String, String> getInfoExtraByToken() {
-        String token = getToken();
-        if (token != null) {
-            return getInfoExtraByToken(token);
-        }
+    public List<TaskInfo<Long>> getAll() {
         return null;
     }
 
     /**
-     * 获取信息拓展
+     * 手动运行(任务ID使用雪花ID)
      *
-     * @param token token
-     * @return 信息拓展(不存在返回null)
+     * @param methodName 方法名
+     * @return 成功:任务ID 失败:null
      */
     @Override
-    public InfoExtra<Long, String, String> getInfoExtraByToken(String token) {
-        String key = getKey(token);
-        if (key != null) {
-            Long expire = rt.getExpire(key);
-            if (expire > -2) {
-                String[] split = key.split(":", -1);
-                if (split.length == 3) {
-                    return new InfoExtra<>(Long.parseLong(split[1]), token, (String) rt.get(key), expire);
-                }
-            }
-        }
-        return null;
+    public Long manualRun(String methodName) {
+        return manualRun(methodName, Id.next());
     }
 
     /**
-     * 获取信息拓展列表
+     * 手动运行
      *
-     * @param id id
-     * @return 信息拓展列表(不存在返回[])
+     * @param methodName 方法名
+     * @param taskId     任务ID
+     * @return 成功:null 失败:正在执行的任务ID
      */
     @Override
-    public List<InfoExtra<Long, String, String>> getInfoExtraById(Long id) {
-        List<InfoExtra<Long, String, String>> list = new ArrayList<>();
-        List<String> keys = getKey(id);
-        if (!keys.isEmpty()) {
-            List<Object> extras = rt.getMulti(keys);
-            for (int i = 0; i < keys.size(); i++) {
-                Long expire = rt.getExpire(keys.get(i));
-                if (expire > -2) {
-                    String[] split = keys.get(i).split(":", -1);
-                    if (split.length == 3) {
-                        list.add(new InfoExtra<>(id, split[2], (String) extras.get(i), expire));
-                    }
-                }
+    public Long manualRun(String methodName, Long taskId) {
+        String readyKey = getReadyKey(methodName);
+        // 存在准备执行的任务
+        if (readyKey == null) {
+            return null;
+        }
+        List<String> runningKeys = getRunningKey();
+        for (String key : runningKeys) {
+            String[] split = key.split(":", -1);
+            if (split.length == 4 && (methodName.equals(split[2]))) {
+                return null;
             }
         }
-        return list;
+        // TODO
+        return taskId;
+    }
+
+    /**
+     * 设置开启状态
+     *
+     * @param methodName 方法名
+     * @param open       是否开启
+     * @return true:设置成功 false:找不到方法
+     */
+    @Override
+    public boolean setStatus(String methodName, boolean open) {
+        return false;
+    }
+
+    /**
+     * 强制停止任务
+     *
+     * @param taskId 任务ID
+     * @return true:成功 false:找不到任务
+     */
+    @Override
+    public boolean forceStop(Long taskId) {
+        return false;
     }
 
 }

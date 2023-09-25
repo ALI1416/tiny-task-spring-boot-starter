@@ -30,9 +30,9 @@ jobs:
       - name: Build with Maven
         run: mvn clean install -P jacoco
 
-      - name: Analyze with SonarCloud
-        env:
-          ORGANIZATION: ali1416
-          PROJECT_KEY: ALI1416_tiny-task-spring-boot-starter
-          SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
-        run: mvn sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=$ORGANIZATION -Dsonar.projectKey=$PROJECT_KEY -Dsonar.login=$SONAR_TOKEN
+#      - name: Analyze with SonarCloud
+#        env:
+#          ORGANIZATION: ali1416
+#          PROJECT_KEY: ALI1416_tiny-task-spring-boot-starter
+#          SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
+#        run: mvn sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=$ORGANIZATION -Dsonar.projectKey=$PROJECT_KEY -Dsonar.login=$SONAR_TOKEN
