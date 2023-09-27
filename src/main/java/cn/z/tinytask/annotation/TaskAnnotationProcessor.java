@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * <h1>轻量级集群任务注解处理</h1>
@@ -16,7 +15,6 @@ import org.springframework.context.annotation.Configuration;
  * @author ALI[ali-k@foxmail.com]
  * @since 1.0.0
  **/
-@Configuration
 public class TaskAnnotationProcessor implements BeanPostProcessor {
 
     /**

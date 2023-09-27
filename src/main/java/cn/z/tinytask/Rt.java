@@ -5,7 +5,6 @@ import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.serializer.RedisSerializer;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +20,6 @@ import java.util.concurrent.TimeUnit;
  * @author ALI[ali-k@foxmail.com]
  * @since 1.0.0
  **/
-@Component
 public class Rt {
 
     /**
@@ -41,8 +39,10 @@ public class Rt {
     public Rt(RedisConnectionFactory factory) {
         redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(factory);
-        // key使用String序列化
-        redisTemplate.setKeySerializer(RedisSerializer.string());
+        // 使用String序列化
+        RedisSerializer<String> stringRedisSerializer = RedisSerializer.string();
+        redisTemplate.setKeySerializer(stringRedisSerializer);
+        redisTemplate.setValueSerializer(stringRedisSerializer);
         redisTemplate.afterPropertiesSet();
     }
 
@@ -84,7 +84,7 @@ public class Rt {
      * @param key 键(已存在会被覆盖)
      */
     public void set(String key) {
-        redisTemplate.opsForValue().set(key, new byte[0]);
+        redisTemplate.opsForValue().set(key, "");
     }
 
     /**
@@ -94,7 +94,7 @@ public class Rt {
      * @param timeout 超时时间(秒，必须>0)
      */
     public void set(String key, long timeout) {
-        redisTemplate.opsForValue().set(key, new byte[0], timeout, SECONDS);
+        redisTemplate.opsForValue().set(key, "", timeout, SECONDS);
     }
 
 }

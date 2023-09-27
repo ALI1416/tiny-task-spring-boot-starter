@@ -12,22 +12,17 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author ALI[ali-k@foxmail.com]
  * @since 1.0.0
  */
-@ConfigurationProperties(prefix = TinyTaskProperties.TINY_TASK_PREFIX)
+@ConfigurationProperties(prefix = "tiny-task")
 public class TinyTaskProperties {
-
-    /**
-     * 前缀{@value}
-     */
-    public static final String TINY_TASK_PREFIX = "tiny-task";
 
     /**
      * 前缀(默认值"tinytask")
      */
-    private String prefix;
+    private String prefix = "tinytask";
     /**
      * 过期时间(秒)(默认值5)
      */
-    private Long timeout;
+    private long timeout = 5L;
 
     public String getPrefix() {
         return prefix;
@@ -37,11 +32,11 @@ public class TinyTaskProperties {
         this.prefix = prefix;
     }
 
-    public Long getTimeout() {
+    public long getTimeout() {
         return timeout;
     }
 
-    public void setTimeout(Long timeout) {
+    public void setTimeout(long timeout) {
         this.timeout = timeout;
     }
 

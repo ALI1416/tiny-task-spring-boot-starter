@@ -2,4 +2,6 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 cn.z.tinytask.autoconfigure.TinyTaskAutoConfiguration,\
 cn.z.tinytask.T4s,\
-cn.z.tinytask.Rt
+cn.z.tinytask.Rt,\
+cn.z.tinytask.RabbitService
+

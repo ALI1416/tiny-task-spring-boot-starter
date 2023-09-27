@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.connection.Connection;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
@@ -26,7 +25,6 @@ import java.util.Map;
  * @author ALI[ali-k@foxmail.com]
  * @since 1.0.0
  **/
-@Service
 public class RabbitService {
 
     /**
