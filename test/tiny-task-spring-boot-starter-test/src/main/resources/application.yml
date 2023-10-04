@@ -18,10 +18,8 @@ spring:
     password:
     timeout: 10s
 
-id:
-  machine-id: 0
-  machine-bits: 8
-  sequence-bits: 12
+#server:
+#  port: 8081
 
 tiny-task:
   prefix: tinytask

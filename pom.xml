@@ -7,9 +7,9 @@
   <version>1.0.0</version>
 
   <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.7.15</version>
+    <groupId>cn.404z</groupId>
+    <artifactId>parent</artifactId>
+    <version>1.3.0</version>
   </parent>
 
   <name>tiny-task-spring-boot-starter</name>
@@ -24,23 +24,21 @@
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
+      <artifactId>spring-boot-starter</artifactId>
       <version>2.7.15</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-redis</artifactId>
       <version>2.7.15</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-amqp</artifactId>
       <version>2.7.15</version>
-    </dependency>
-    <dependency>
-      <groupId>cn.404z</groupId>
-      <artifactId>id-spring-boot-autoconfigure</artifactId>
-      <version>3.0.1</version>
+      <scope>provided</scope>
     </dependency>
     <!-- 仅供编译使用 -->
     <dependency>
@@ -48,12 +46,14 @@
       <artifactId>spring-boot-autoconfigure-processor</artifactId>
       <version>2.7.15</version>
       <optional>true</optional>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-configuration-processor</artifactId>
       <version>2.7.15</version>
       <optional>true</optional>
+      <scope>provided</scope>
     </dependency>
     <!-- 仅供测试使用 -->
     <dependency>
@@ -67,12 +67,6 @@
       <artifactId>lombok</artifactId>
       <version>1.18.28</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-devtools</artifactId>
-      <scope>runtime</scope>
-      <optional>true</optional>
     </dependency>
   </dependencies>
 

@@ -1,5 +1,6 @@
 package cn.z.tinytask;
 
+import cn.z.tinytask.annotation.TaskAnnotationProcessor;
 import cn.z.tinytask.autoconfigure.TinyTaskProperties;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
@@ -10,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.connection.Connection;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 
-import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,12 +25,12 @@ import java.util.Map;
  * @author ALI[ali-k@foxmail.com]
  * @since 1.0.0
  **/
-public class RabbitService {
+public class Rs {
 
     /**
      * 日志实例
      */
-    private static final Logger log = LoggerFactory.getLogger(RabbitService.class);
+    private static final Logger log = LoggerFactory.getLogger(Rs.class);
 
     /**
      * 构造函数(自动注入)
@@ -38,14 +38,14 @@ public class RabbitService {
      * @param tinyTaskProperties TinyTaskProperties
      * @param factory            ConnectionFactory
      */
-    public RabbitService(TinyTaskProperties tinyTaskProperties, ConnectionFactory factory, IndexController indexController) throws Exception {
+    public Rs(TinyTaskProperties tinyTaskProperties, ConnectionFactory factory) throws Exception {
         try (Connection connection = factory.createConnection()) {
             Map<String, Object> arguments = new HashMap<>(1);
             // 队列消息过期时间
             arguments.put("x-message-ttl", tinyTaskProperties.getTimeout() * 1000);
             try (Channel channel = connection.createChannel(false)) {
                 // 创建队列
-                channel.queueDeclare(tinyTaskProperties.getPrefix(), true, true, true, arguments);
+                channel.queueDeclare(tinyTaskProperties.getPrefix(), true, false, true, arguments);
                 // 监听消息
                 channel.basicConsume(tinyTaskProperties.getPrefix(), true, new DefaultConsumer(channel) {
 
@@ -54,12 +54,10 @@ public class RabbitService {
                         try {
                             String msg = new String(body, StandardCharsets.UTF_8);
                             int index = msg.lastIndexOf('.');
-                            String className = msg.substring(0, index);
-                            String methodName = msg.substring(index + 1);
-                            Method method = indexController.getClass().getMethod(methodName);
-                            method.invoke(indexController);
+                            Object bean = TaskAnnotationProcessor.getBean(msg.substring(0, index));
+                            bean.getClass().getMethod(msg.substring(index + 1)).invoke(bean);
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            log.error("任务执行异常", e);
                         }
                     }
 

@@ -14,7 +14,7 @@
 
 ## 简介
 
-轻量级集群任务SpringBoot实现，使用Redis、RabbitMQ、雪花ID等技术
+轻量级集群任务SpringBoot实现，使用Redis、RabbitMQ等技术
 
 使用方法请看[项目示例](./test/tiny-task-spring-boot-starter-test)
 
@@ -28,7 +28,7 @@
 </dependency>
 <dependency>
   <groupId>org.springframework.boot</groupId>
-  <artifactId>spring-boot-starter-web</artifactId>
+  <artifactId>spring-boot-starter</artifactId>
   <version>2.7.15</version>
 </dependency>
 <dependency>
@@ -40,11 +40,6 @@
   <groupId>org.springframework.boot</groupId>
   <artifactId>spring-boot-starter-amqp</artifactId>
   <version>2.7.15</version>
-</dependency>
-<dependency>
-  <groupId>cn.404z</groupId>
-  <artifactId>id-spring-boot-autoconfigure</artifactId>
-  <version>3.0.1</version>
 </dependency>
 <dependency>
   <groupId>org.projectlombok</groupId>
