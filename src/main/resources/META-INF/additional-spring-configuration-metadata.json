@@ -10,7 +10,7 @@
     {
       "name": "tiny-task.timeout",
       "type": "java.lang.Long",
-      "description": "过期时间(秒)(默认值5).",
+      "description": "过期时间(秒).",
       "sourceType": "cn.z.tinytask.autoconfigure.TinyTaskProperties",
       "defaultValue": 5
     }

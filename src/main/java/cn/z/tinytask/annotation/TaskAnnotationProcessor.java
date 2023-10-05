@@ -144,7 +144,7 @@ public class TaskAnnotationProcessor implements ApplicationContextAware, SmartIn
         };
 
         // cron
-        String cron = task.cron();
+        String cron = task.value();
         if (!cron.isEmpty()) {
             TimeZone timeZone;
             String zone = task.zone();

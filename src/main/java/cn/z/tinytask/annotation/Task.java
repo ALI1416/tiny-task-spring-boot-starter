@@ -8,6 +8,24 @@ import java.util.concurrent.TimeUnit;
  * <h1>轻量级集群任务</h1>
  *
  * <p>
+ * 优先级：
+ * <ol>
+ * <li>cron表达式：{@link #value()}</li>
+ * <li>循环执行间隔时间：{@link #fixedDelay()}、{@link #fixedDelayDuration()}</li>
+ * <li>增强循环执行间隔时间：{@link #fixedRate()}、{@link #fixedRateDuration()}</li>
+ * </ol>
+ * </p>
+ *
+ * <p>
+ * 示例：
+ * <ul>
+ * <li>立即执行，10秒循环：<code>@Task(fixedDelay = 10)</code></li>
+ * <li>1秒后执行，10秒增强循环：<code>@Task(initialDelay = 1, fixedRateDuration = "PT10S")</code></li>
+ * <li>cron表达式，10秒循环：<code>@Task("&#42;/10 * * * * *")</code></li>
+ * </ul>
+ * </p>
+ *
+ * <p>
  * createDate 2023/09/25 15:59:23
  * </p>
  *
@@ -22,11 +40,11 @@ public @interface Task {
     /**
      * cron表达式(默认""不使用cron表达式)
      */
-    String cron() default "";
+    String value() default "";
 
     /**
      * 时区(默认""使用本地时区)<br>
-     * 仅对{@link #cron()}有效
+     * 仅对{@link #value()}有效
      *
      * @see TimeZone#getTimeZone(String)
      */
@@ -73,7 +91,7 @@ public @interface Task {
     String fixedRateDuration() default "";
 
     /**
-     * 时间单位(默认TimeUnit.SECONDS秒)<br>
+     * 时间单位(默认秒)<br>
      * 仅对{@link #initialDelay()}、{@link #fixedDelay()}、{@link #fixedRate()}
      */
     TimeUnit timeUnit() default TimeUnit.SECONDS;

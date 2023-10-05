@@ -52,6 +52,7 @@ public class Rs {
                     @Override
                     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) {
                         try {
+                            // 任务名:Bean名.方法名
                             String msg = new String(body, StandardCharsets.UTF_8);
                             int index = msg.lastIndexOf('.');
                             Object bean = TaskAnnotationProcessor.getBean(msg.substring(0, index));
