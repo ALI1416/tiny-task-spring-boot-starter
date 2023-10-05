@@ -7,8 +7,7 @@
 [![Repo Size](https://img.shields.io/github/repo-size/ALI1416/tiny-task-spring-boot-starter?label=Repo%20Size&color=success)](https://github.com/ALI1416/tiny-task-spring-boot-starter/archive/refs/heads/master.zip)
 
 [![Java CI](https://github.com/ALI1416/tiny-task-spring-boot-starter/actions/workflows/ci.yml/badge.svg)](https://github.com/ALI1416/tiny-task-spring-boot-starter/actions/workflows/ci.yml)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=ALI1416_tiny-task-spring-boot-starter&metric=coverage)
-![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=ALI1416_tiny-task-spring-boot-starter&metric=reliability_rating)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=ALI1416_tiny-task-spring-boot-starter&metric=reliability_rating)
 ![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=ALI1416_tiny-task-spring-boot-starter&metric=sqale_rating)
 ![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=ALI1416_tiny-task-spring-boot-starter&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=ALI1416_tiny-task-spring-boot-starter)
 
