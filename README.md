@@ -40,12 +40,6 @@
   <artifactId>spring-boot-starter-amqp</artifactId>
   <version>2.7.15</version>
 </dependency>
-<dependency>
-  <groupId>org.projectlombok</groupId>
-  <artifactId>lombok</artifactId>
-  <version>1.18.28</version>
-  <optional>true</optional>
-</dependency>
 ```
 
 ## 更新日志
