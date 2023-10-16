@@ -13,16 +13,12 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.core.MethodIntrospector;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.scheduling.config.CronTask;
-import org.springframework.scheduling.config.FixedDelayTask;
-import org.springframework.scheduling.config.FixedRateTask;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.scheduling.support.CronTrigger;
 
 import java.lang.reflect.Method;
-import java.time.Duration;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
 
 /**
  * <h1>轻量级集群任务注解处理</h1>
@@ -132,17 +128,14 @@ public class TaskAnnotationProcessor implements ApplicationContextAware, SmartIn
         if (method.getParameters().length != 0) {
             throw new TinyTaskException("方法 " + method + " 不能有参数");
         }
-
         // 任务名:Bean名.方法名
         String name = beanName + "." + method.getName();
-
         // Redis和RabbitMQ
         Runnable runnable = () -> {
             if (Boolean.TRUE.equals(rt.setIfAbsent(prefix + ":" + name, timeout))) {
                 rabbitTemplate.convertAndSend(prefix, name);
             }
         };
-
         // cron
         String cron = task.value();
         if (!cron.isEmpty()) {
@@ -156,52 +149,6 @@ public class TaskAnnotationProcessor implements ApplicationContextAware, SmartIn
             registrar.scheduleCronTask(new CronTask(runnable, new CronTrigger(cron, timeZone)));
             return;
         }
-
-        // time unit
-        TimeUnit timeUnit = task.timeUnit();
-
-        // initial delay
-        long initialDelay = task.initialDelay();
-        if (initialDelay > 0) {
-            initialDelay = TimeUnit.MILLISECONDS.convert(initialDelay, timeUnit);
-        } else if (initialDelay < 0) {
-            String initialDelayDuration = task.initialDelayDuration();
-            if (initialDelayDuration.isEmpty()) {
-                throw new TinyTaskException("方法 " + method + " @Task注解的 initialDelay 或 initialDelayDuration 不合法");
-            }
-            initialDelay = Duration.parse(initialDelayDuration).toMillis();
-        }
-
-        // fixed delay
-        long fixedDelay = task.fixedDelay();
-        if (fixedDelay > 0) {
-            fixedDelay = TimeUnit.MILLISECONDS.convert(fixedDelay, timeUnit);
-        } else {
-            String fixedDelayDuration = task.fixedDelayDuration();
-            if (!fixedDelayDuration.isEmpty()) {
-                fixedDelay = Duration.parse(fixedDelayDuration).toMillis();
-            }
-        }
-        if (fixedDelay > 0) {
-            registrar.scheduleFixedDelayTask(new FixedDelayTask(runnable, fixedDelay, initialDelay));
-            return;
-        }
-
-        // fixed rate
-        long fixedRate = task.fixedRate();
-        if (fixedRate > 0) {
-            fixedRate = TimeUnit.MILLISECONDS.convert(fixedRate, timeUnit);
-        } else {
-            String fixedRateDuration = task.fixedRateDuration();
-            if (!fixedRateDuration.isEmpty()) {
-                fixedRate = Duration.parse(fixedRateDuration).toMillis();
-            }
-        }
-        if (fixedRate > 0) {
-            registrar.scheduleFixedRateTask(new FixedRateTask(runnable, fixedRate, initialDelay));
-            return;
-        }
-
         throw new TinyTaskException("方法 " + method + " @Task注解无效");
     }
 

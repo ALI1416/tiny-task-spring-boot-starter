@@ -2,12 +2,12 @@ package cn.z.tinytask;
 
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.util.concurrent.TimeUnit;
 
 /**
- * <h1>Redis模板类</h1>
+ * <h1>Redis模板</h1>
  *
  * <p>
  * createDate 2023/08/01 16:20:58
@@ -32,7 +32,7 @@ public class Rt {
         redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(factory);
         // 使用String序列化
-        redisTemplate.setDefaultSerializer(RedisSerializer.string());
+        redisTemplate.setDefaultSerializer(StringRedisSerializer.UTF_8);
         redisTemplate.afterPropertiesSet();
     }
 

@@ -15,15 +15,13 @@
 
 轻量级集群任务SpringBoot实现，使用Redis、RabbitMQ等技术
 
-使用方法请看[项目示例](./test/tiny-task-spring-boot-starter-test)
-
 ## 依赖导入
 
 ```xml
 <dependency>
   <groupId>cn.404z</groupId>
   <artifactId>tiny-task-spring-boot-starter</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
 </dependency>
 <dependency>
   <groupId>org.springframework.boot</groupId>
@@ -41,6 +39,17 @@
   <version>2.7.15</version>
 </dependency>
 ```
+
+## 使用方法
+
+```java
+// 每分钟的0秒执行一次
+@Task("0/10 * * * * *")
+public void test() {
+}
+```
+
+更多请见[测试](./test/tiny-task-spring-boot-starter-test)
 
 ## 更新日志
 
