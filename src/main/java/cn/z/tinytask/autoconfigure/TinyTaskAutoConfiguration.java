@@ -28,7 +28,7 @@ public class TinyTaskAutoConfiguration {
      * @param tinyTaskProperties TinyTaskProperties
      */
     public TinyTaskAutoConfiguration(TinyTaskProperties tinyTaskProperties) {
-        log.info("TinyTask配置：前缀PREFIX {} ，过期时间TIMEOUT {} (秒)", tinyTaskProperties.getPrefix(), tinyTaskProperties.getTimeout());
+        log.info("TinyTask配置：rabbit前缀RABBIT_PREFIX {} ，redis前缀REDIS_PREFIX {} ，rabbit过期时间RABBIT_TIMEOUT {} (秒) ，redis过期时间REDIS_TIMEOUT {} (秒)", tinyTaskProperties.getPrefixRabbit(), tinyTaskProperties.getPrefixRedis(), tinyTaskProperties.getTimeoutRabbit(), tinyTaskProperties.getTimeoutRedis());
     }
 
 }

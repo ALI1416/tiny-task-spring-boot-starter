@@ -16,28 +16,52 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class TinyTaskProperties {
 
     /**
-     * 前缀(默认值"tinytask")
+     * rabbit前缀(默认值"tinytask")
      */
-    private String prefix = "tinytask";
+    private String prefixRabbit = "tinytask";
     /**
-     * 过期时间(秒)(默认值5)
+     * redis前缀(默认值"tinytask")
      */
-    private long timeout = 5L;
+    private String prefixRedis = "tinytask";
+    /**
+     * rabbit过期时间(秒)(默认值5)
+     */
+    private long timeoutRabbit = 5L;
+    /**
+     * redis过期时间(秒)(默认值5)
+     */
+    private long timeoutRedis = 5L;
 
-    public String getPrefix() {
-        return prefix;
+    public String getPrefixRabbit() {
+        return prefixRabbit;
     }
 
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
+    public void setPrefixRabbit(String prefixRabbit) {
+        this.prefixRabbit = prefixRabbit;
     }
 
-    public long getTimeout() {
-        return timeout;
+    public String getPrefixRedis() {
+        return prefixRedis;
     }
 
-    public void setTimeout(long timeout) {
-        this.timeout = timeout;
+    public void setPrefixRedis(String prefixRedis) {
+        this.prefixRedis = prefixRedis;
+    }
+
+    public long getTimeoutRabbit() {
+        return timeoutRabbit;
+    }
+
+    public void setTimeoutRabbit(long timeoutRabbit) {
+        this.timeoutRabbit = timeoutRabbit;
+    }
+
+    public long getTimeoutRedis() {
+        return timeoutRedis;
+    }
+
+    public void setTimeoutRedis(long timeoutRedis) {
+        this.timeoutRedis = timeoutRedis;
     }
 
 }

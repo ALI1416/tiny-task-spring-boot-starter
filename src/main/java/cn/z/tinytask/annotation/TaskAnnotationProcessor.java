@@ -33,13 +33,17 @@ import java.util.TimeZone;
 public class TaskAnnotationProcessor implements ApplicationContextAware, SmartInitializingSingleton, DisposableBean {
 
     /**
-     * 前缀
+     * rabbit前缀
      */
-    private final String prefix;
+    private final String prefixRabbit;
     /**
-     * 过期时间(秒)
+     * redis前缀
      */
-    private final long timeout;
+    private final String prefixRedis;
+    /**
+     * redis过期时间(秒)
+     */
+    private final long timeoutRedis;
     /**
      * Redis模板类
      */
@@ -61,8 +65,9 @@ public class TaskAnnotationProcessor implements ApplicationContextAware, SmartIn
      * @param rabbitTemplate     RabbitTemplate
      */
     public TaskAnnotationProcessor(TinyTaskProperties tinyTaskProperties, Rt rt, RabbitTemplate rabbitTemplate) {
-        this.prefix = tinyTaskProperties.getPrefix();
-        this.timeout = tinyTaskProperties.getTimeout();
+        this.prefixRabbit = tinyTaskProperties.getPrefixRabbit();
+        this.prefixRedis = tinyTaskProperties.getPrefixRedis();
+        this.timeoutRedis = tinyTaskProperties.getTimeoutRedis();
         this.rt = rt;
         this.rabbitTemplate = rabbitTemplate;
         this.registrar = new ScheduledTaskRegistrar();
@@ -132,8 +137,8 @@ public class TaskAnnotationProcessor implements ApplicationContextAware, SmartIn
         String name = beanName + "." + method.getName();
         // Redis和RabbitMQ
         Runnable runnable = () -> {
-            if (Boolean.TRUE.equals(rt.setIfAbsent(prefix + ":" + name, timeout))) {
-                rabbitTemplate.convertAndSend(prefix, name);
+            if (Boolean.TRUE.equals(rt.setIfAbsent(prefixRedis + ":" + name, timeoutRedis))) {
+                rabbitTemplate.convertAndSend(prefixRabbit, name);
             }
         };
         // cron

@@ -39,15 +39,17 @@ public class Rs {
      * @param factory            ConnectionFactory
      */
     public Rs(TinyTaskProperties tinyTaskProperties, ConnectionFactory factory) throws Exception {
+        String prefixRabbit = tinyTaskProperties.getPrefixRabbit();
+        long timeoutRabbit = tinyTaskProperties.getTimeoutRabbit();
         try (Connection connection = factory.createConnection()) {
             Map<String, Object> arguments = new HashMap<>(1);
             // 队列消息过期时间
-            arguments.put("x-message-ttl", tinyTaskProperties.getTimeout() * 1000);
+            arguments.put("x-message-ttl", timeoutRabbit * 1000);
             try (Channel channel = connection.createChannel(false)) {
                 // 创建队列
-                channel.queueDeclare(tinyTaskProperties.getPrefix(), true, false, true, arguments);
+                channel.queueDeclare(prefixRabbit, true, false, true, arguments);
                 // 监听消息
-                channel.basicConsume(tinyTaskProperties.getPrefix(), true, new DefaultConsumer(channel) {
+                channel.basicConsume(prefixRabbit, true, new DefaultConsumer(channel) {
 
                     @Override
                     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) {

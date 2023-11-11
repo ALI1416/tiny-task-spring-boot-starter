@@ -1,16 +1,30 @@
 {
   "properties": [
     {
-      "name": "tiny-task.prefix",
+      "name": "tiny-task.prefix-rabbit",
       "type": "java.lang.String",
-      "description": "前缀.",
+      "description": "rabbit前缀.",
       "sourceType": "cn.z.tinytask.autoconfigure.TinyTaskProperties",
       "defaultValue": "tinytask"
     },
     {
-      "name": "tiny-task.timeout",
+      "name": "tiny-task.prefix-redis",
+      "type": "java.lang.String",
+      "description": "redis前缀.",
+      "sourceType": "cn.z.tinytask.autoconfigure.TinyTaskProperties",
+      "defaultValue": "tinytask"
+    },
+    {
+      "name": "tiny-task.timeout-rabbit",
       "type": "java.lang.Long",
-      "description": "过期时间(秒).",
+      "description": "rabbit过期时间(秒).",
+      "sourceType": "cn.z.tinytask.autoconfigure.TinyTaskProperties",
+      "defaultValue": 5
+    },
+    {
+      "name": "tiny-task.timeout-redis",
+      "type": "java.lang.Long",
+      "description": "redis过期时间(秒).",
       "sourceType": "cn.z.tinytask.autoconfigure.TinyTaskProperties",
       "defaultValue": 5
     }
