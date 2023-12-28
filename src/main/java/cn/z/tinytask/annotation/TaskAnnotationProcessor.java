@@ -3,6 +3,8 @@ package cn.z.tinytask.annotation;
 import cn.z.tinytask.Rt;
 import cn.z.tinytask.TinyTaskException;
 import cn.z.tinytask.autoconfigure.TinyTaskProperties;
+import cn.z.tinytask.autoconfigure.TinyTaskRabbitProperties;
+import cn.z.tinytask.autoconfigure.TinyTaskRedisProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
@@ -19,6 +21,7 @@ import org.springframework.scheduling.support.CronTrigger;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.Executors;
 
 /**
  * <h1>轻量级集群任务注解处理</h1>
@@ -33,19 +36,19 @@ import java.util.TimeZone;
 public class TaskAnnotationProcessor implements ApplicationContextAware, SmartInitializingSingleton, DisposableBean {
 
     /**
-     * rabbit前缀
+     * 轻量级集群任务配置属性
      */
-    private final String prefixRabbit;
+    private final TinyTaskProperties tinyTaskProperties;
     /**
-     * redis前缀
+     * 轻量级集群任务Redis配置属性
      */
-    private final String prefixRedis;
+    private final TinyTaskRedisProperties tinyTaskRedisProperties;
     /**
-     * redis过期时间(秒)
+     * 轻量级集群任务RabbitMQ配置属性
      */
-    private final long timeoutRedis;
+    private final TinyTaskRabbitProperties tinyTaskRabbitProperties;
     /**
-     * Redis模板类
+     * Redis模板
      */
     private final Rt rt;
     /**
@@ -60,14 +63,16 @@ public class TaskAnnotationProcessor implements ApplicationContextAware, SmartIn
     /**
      * 构造函数(自动注入)
      *
-     * @param tinyTaskProperties TinyTaskProperties
-     * @param rt                 Rt
-     * @param rabbitTemplate     RabbitTemplate
+     * @param tinyTaskProperties       TinyTaskProperties
+     * @param tinyTaskRedisProperties  TinyTaskRedisProperties
+     * @param tinyTaskRabbitProperties TinyTaskRabbitProperties
+     * @param rt                       Rt
+     * @param rabbitTemplate           RabbitTemplate
      */
-    public TaskAnnotationProcessor(TinyTaskProperties tinyTaskProperties, Rt rt, RabbitTemplate rabbitTemplate) {
-        this.prefixRabbit = tinyTaskProperties.getPrefixRabbit();
-        this.prefixRedis = tinyTaskProperties.getPrefixRedis();
-        this.timeoutRedis = tinyTaskProperties.getTimeoutRedis();
+    public TaskAnnotationProcessor(TinyTaskProperties tinyTaskProperties, TinyTaskRedisProperties tinyTaskRedisProperties, TinyTaskRabbitProperties tinyTaskRabbitProperties, Rt rt, RabbitTemplate rabbitTemplate) {
+        this.tinyTaskProperties = tinyTaskProperties;
+        this.tinyTaskRedisProperties = tinyTaskRedisProperties;
+        this.tinyTaskRabbitProperties = tinyTaskRabbitProperties;
         this.rt = rt;
         this.rabbitTemplate = rabbitTemplate;
         this.registrar = new ScheduledTaskRegistrar();
@@ -104,6 +109,8 @@ public class TaskAnnotationProcessor implements ApplicationContextAware, SmartIn
         if (applicationContext == null) {
             throw new TinyTaskException("找不到 ApplicationContext");
         }
+        // 设置线程池数量
+        registrar.setScheduler(Executors.newScheduledThreadPool(tinyTaskProperties.getThreadPoolSize()));
         // 所有Bean
         String[] beanNamesForTypeArray = applicationContext.getBeanNamesForType(Object.class, false, true);
         for (String beanNamesForType : beanNamesForTypeArray) {
@@ -133,17 +140,9 @@ public class TaskAnnotationProcessor implements ApplicationContextAware, SmartIn
         if (method.getParameters().length != 0) {
             throw new TinyTaskException("方法 " + method + " 不能有参数");
         }
-        // 任务名:Bean名.方法名
-        String name = beanName + "." + method.getName();
-        // Redis和RabbitMQ
-        Runnable runnable = () -> {
-            if (Boolean.TRUE.equals(rt.setIfAbsent(prefixRedis + ":" + name, timeoutRedis))) {
-                rabbitTemplate.convertAndSend(prefixRabbit, name);
-            }
-        };
-        // cron
         String cron = task.value();
         if (!cron.isEmpty()) {
+            // 时区
             TimeZone timeZone;
             String zone = task.zone();
             if (zone.isEmpty()) {
@@ -151,10 +150,19 @@ public class TaskAnnotationProcessor implements ApplicationContextAware, SmartIn
             } else {
                 timeZone = TimeZone.getTimeZone(zone);
             }
-            registrar.scheduleCronTask(new CronTask(runnable, new CronTrigger(cron, timeZone)));
-            return;
+            // 任务名:Bean名.方法名
+            String name = beanName + "." + method.getName();
+            // Redis和RabbitMQ
+            Runnable runnable = () -> {
+                if (Boolean.TRUE.equals(rt.setIfAbsent(tinyTaskRedisProperties.getPrefix() + ":" + name, tinyTaskRedisProperties.getTimeout()))) {
+                    rabbitTemplate.convertAndSend(tinyTaskRabbitProperties.getPrefix(), name);
+                }
+            };
+            // 添加cron任务
+            registrar.addCronTask(new CronTask(runnable, new CronTrigger(cron, timeZone)));
+        } else {
+            throw new TinyTaskException("方法 " + method + " @Task注解无效");
         }
-        throw new TinyTaskException("方法 " + method + " @Task注解无效");
     }
 
     /**

@@ -1,7 +1,7 @@
 package cn.z.tinytask;
 
 import cn.z.tinytask.annotation.TaskAnnotationProcessor;
-import cn.z.tinytask.autoconfigure.TinyTaskProperties;
+import cn.z.tinytask.autoconfigure.TinyTaskRabbitProperties;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
@@ -35,21 +35,19 @@ public class Rs {
     /**
      * 构造函数(自动注入)
      *
-     * @param tinyTaskProperties TinyTaskProperties
-     * @param factory            ConnectionFactory
+     * @param tinyTaskRabbitProperties TinyTaskRabbitProperties
+     * @param factory                  ConnectionFactory
      */
-    public Rs(TinyTaskProperties tinyTaskProperties, ConnectionFactory factory) throws Exception {
-        String prefixRabbit = tinyTaskProperties.getPrefixRabbit();
-        long timeoutRabbit = tinyTaskProperties.getTimeoutRabbit();
+    public Rs(TinyTaskRabbitProperties tinyTaskRabbitProperties, ConnectionFactory factory) throws Exception {
         try (Connection connection = factory.createConnection()) {
             Map<String, Object> arguments = new HashMap<>(1);
             // 队列消息过期时间
-            arguments.put("x-message-ttl", timeoutRabbit * 1000);
+            arguments.put("x-message-ttl", tinyTaskRabbitProperties.getTimeout() * 1000);
             try (Channel channel = connection.createChannel(false)) {
                 // 创建队列
-                channel.queueDeclare(prefixRabbit, true, false, true, arguments);
+                channel.queueDeclare(tinyTaskRabbitProperties.getPrefix(), true, false, true, arguments);
                 // 监听消息
-                channel.basicConsume(prefixRabbit, true, new DefaultConsumer(channel) {
+                channel.basicConsume(tinyTaskRabbitProperties.getPrefix(), true, new DefaultConsumer(channel) {
 
                     @Override
                     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) {

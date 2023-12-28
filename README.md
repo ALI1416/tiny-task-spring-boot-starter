@@ -21,7 +21,7 @@
 <dependency>
   <groupId>cn.404z</groupId>
   <artifactId>tiny-task-spring-boot-starter</artifactId>
-  <version>1.3.0</version>
+  <version>1.4.0</version>
 </dependency>
 <dependency>
   <groupId>org.springframework.boot</groupId>

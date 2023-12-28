@@ -2,6 +2,7 @@ package com.demo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 /**
  * <h1>启动类</h1>
@@ -29,6 +30,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @since 1.0.0
  **/
 @SpringBootApplication
+@EnableAsync
 public class App {
 
     public static void main(String[] args) {

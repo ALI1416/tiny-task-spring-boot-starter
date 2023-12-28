@@ -2,6 +2,7 @@ package com.demo.service;
 
 import cn.z.tinytask.annotation.Task;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 /**
@@ -19,11 +20,23 @@ import org.springframework.stereotype.Service;
 public class TaskService {
 
     /**
-     * 每分钟的0秒执行一次
+     * 每10秒执行一次
      */
+    @Async
     @Task("0/10 * * * * *")
-    public void test() {
+    public void test() throws InterruptedException {
         log.info("测试");
+        Thread.sleep(2000);
+    }
+
+    /**
+     * 每10秒执行一次
+     */
+    @Async
+    @Task("0/10 * * * * *")
+    public void test2() throws InterruptedException {
+        log.info("测试2");
+        Thread.sleep(2000);
     }
 
     /**

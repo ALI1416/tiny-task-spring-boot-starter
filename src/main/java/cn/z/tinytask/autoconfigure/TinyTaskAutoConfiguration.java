@@ -14,7 +14,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
  * @author ALI[ali-k@foxmail.com]
  * @since 1.0.0
  */
-@EnableConfigurationProperties(TinyTaskProperties.class)
+@EnableConfigurationProperties({TinyTaskProperties.class, TinyTaskRedisProperties.class, TinyTaskRabbitProperties.class})
 public class TinyTaskAutoConfiguration {
 
     /**
@@ -25,10 +25,16 @@ public class TinyTaskAutoConfiguration {
     /**
      * 构造函数(自动注入)
      *
-     * @param tinyTaskProperties TinyTaskProperties
+     * @param tinyTaskProperties       TinyTaskProperties
+     * @param tinyTaskRedisProperties  TinyTaskRedisProperties
+     * @param tinyTaskRabbitProperties TinyTaskRabbitProperties
      */
-    public TinyTaskAutoConfiguration(TinyTaskProperties tinyTaskProperties) {
-        log.info("TinyTask配置：rabbit前缀RABBIT_PREFIX {} ，redis前缀REDIS_PREFIX {} ，rabbit过期时间RABBIT_TIMEOUT {} (秒) ，redis过期时间REDIS_TIMEOUT {} (秒)", tinyTaskProperties.getPrefixRabbit(), tinyTaskProperties.getPrefixRedis(), tinyTaskProperties.getTimeoutRabbit(), tinyTaskProperties.getTimeoutRedis());
+    public TinyTaskAutoConfiguration(TinyTaskProperties tinyTaskProperties, TinyTaskRedisProperties tinyTaskRedisProperties, TinyTaskRabbitProperties tinyTaskRabbitProperties) {
+        log.info("TinyTask配置：线程池数量THREAD_POOL_SIZE {} ，Redis前缀PREFIX {} ，Redis过期时间TIMEOUT {} (秒) ，RabbitMQ前缀PREFIX {} ，RabbitMQ过期时间TIMEOUT {} (秒)",
+                tinyTaskProperties.getThreadPoolSize(),
+                tinyTaskRedisProperties.getPrefix(), tinyTaskRedisProperties.getTimeout(),
+                tinyTaskRabbitProperties.getPrefix(), tinyTaskRabbitProperties.getTimeout()
+        );
     }
 
 }
