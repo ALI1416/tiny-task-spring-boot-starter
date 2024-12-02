@@ -21,22 +21,22 @@
 <dependency>
   <groupId>cn.404z</groupId>
   <artifactId>tiny-task-spring-boot-starter</artifactId>
-  <version>1.4.1</version>
+  <version>1.5.0</version>
 </dependency>
 <dependency>
   <groupId>org.springframework.boot</groupId>
   <artifactId>spring-boot-starter</artifactId>
-  <version>2.7.15</version>
+  <version>2.7.18</version>
 </dependency>
 <dependency>
   <groupId>org.springframework.boot</groupId>
   <artifactId>spring-boot-starter-data-redis</artifactId>
-  <version>2.7.15</version>
+  <version>2.7.18</version>
 </dependency>
 <dependency>
   <groupId>org.springframework.boot</groupId>
   <artifactId>spring-boot-starter-amqp</artifactId>
-  <version>2.7.15</version>
+  <version>2.7.18</version>
 </dependency>
 ```
 

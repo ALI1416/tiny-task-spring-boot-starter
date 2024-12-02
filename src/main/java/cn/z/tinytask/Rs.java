@@ -58,7 +58,7 @@ public class Rs {
                             Object bean = TaskAnnotationProcessor.getBean(msg.substring(0, index));
                             bean.getClass().getMethod(msg.substring(index + 1)).invoke(bean);
                         } catch (Exception e) {
-                            log.error("任务执行异常", e);
+                            log.error("任务执行异常！", e);
                         }
                     }
 
